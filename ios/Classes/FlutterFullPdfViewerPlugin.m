@@ -62,7 +62,7 @@
             NSURLRequest *request = [NSURLRequest requestWithURL:targetURL];
             [_webView loadRequest:request];
 
-                [_viewController.view addSubview:_webView]; }
+                [_viewController.view addSubview:_webView]; }}
     
     if ([@"launch" isEqualToString:call.method]) {
 
