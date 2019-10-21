@@ -48,30 +48,24 @@
     }
     
     
+
+
     if ([@"launch" isEqualToString:call.method]) {
-        
+
         NSDictionary *rect = call.arguments[@"rect"];
         NSString *path = call.arguments[@"path"];
-        
+
         CGRect rc = [self parseRect:rect];
-        
+
         if (_webView == nil){
-            _webView = [[WKWebView alloc] initWithFrame:rc];
-            
-            NSURL *targetURL = [NSURL fileURLWithPath:path];
+        _webView = [[WKWebView alloc] initWithFrame:rc];
 
-            if (@available(iOS 9.0, *)) {
-                [_webView loadFileURL:targetURL allowingReadAccessToURL:targetURL];
-            } else {
-                // untested.
-                // _webView.scalesPageToFit = true;
-                NSURLRequest *request = [NSURLRequest requestWithURL:targetURL];
-                [_webView loadRequest:request];
-            }
+        NSURL *targetURL = [NSURL URLWithString:path];
 
-            
-            [_viewController.view addSubview:_webView];
-        }
+        NSURLRequest *request = [NSURLRequest requestWithURL:targetURL];
+        [_webView loadRequest:request];
+
+            [_viewController.view addSubview:_webView]; }
         
     } else if ([@"resize" isEqualToString:call.method]) {
         if (_webView != nil) {

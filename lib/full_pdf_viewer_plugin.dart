@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -11,17 +12,37 @@ class PDFViewerPlugin {
   static PDFViewerPlugin _instance;
 
   factory PDFViewerPlugin() => _instance ??= new PDFViewerPlugin._();
+
   PDFViewerPlugin._() {
     _channel.setMethodCallHandler(_handleMessages);
   }
 
   final _onDestroy = new StreamController<Null>.broadcast();
+
   Stream<Null> get onDestroy => _onDestroy.stream;
+
   Future<Null> _handleMessages(MethodCall call) async {
     switch (call.method) {
       case 'onDestroy':
         _onDestroy.add(null);
         break;
+    }
+  }
+
+  Future<Null> launchUrl(String path, {Rect rect}) async {
+    if (Platform.isIOS) {
+      final args = <String, dynamic>{'path': path};
+      if (rect != null) {
+        args['rect'] = {
+          'left': rect.left,
+          'top': rect.top,
+          'width': rect.width,
+          'height': rect.height
+        };
+        await _channel.invokeMethod('launchUrl', args);
+      } else {
+        throw Exception("Feature is not implemented for Android");
+      }
     }
   }
 
