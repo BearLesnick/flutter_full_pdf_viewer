@@ -46,10 +46,24 @@
                                     details:nil]);
         _result = nil;
     }
-    
-    
 
+        if ([@"launchUrl" isEqualToString:call.method]) {
 
+            NSDictionary *rect = call.arguments[@"rect"];
+            NSString *path = call.arguments[@"path"];
+
+            CGRect rc = [self parseRect:rect];
+
+            if (_webView == nil){
+            _webView = [[WKWebView alloc] initWithFrame:rc];
+
+            NSURL *targetURL = [NSURL URLWithString:path];
+
+            NSURLRequest *request = [NSURLRequest requestWithURL:targetURL];
+            [_webView loadRequest:request];
+
+                [_viewController.view addSubview:_webView]; }
+    
     if ([@"launch" isEqualToString:call.method]) {
 
         NSDictionary *rect = call.arguments[@"rect"];
@@ -58,14 +72,22 @@
         CGRect rc = [self parseRect:rect];
 
         if (_webView == nil){
-        _webView = [[WKWebView alloc] initWithFrame:rc];
+            _webView = [[WKWebView alloc] initWithFrame:rc];
 
-        NSURL *targetURL = [NSURL URLWithString:path];
+            NSURL *targetURL = [NSURL fileURLWithPath:path];
 
-        NSURLRequest *request = [NSURLRequest requestWithURL:targetURL];
-        [_webView loadRequest:request];
+            if (@available(iOS 9.0, *)) {
+                [_webView loadFileURL:targetURL allowingReadAccessToURL:targetURL];
+            } else {
+                // untested.
+                // _webView.scalesPageToFit = true;
+                NSURLRequest *request = [NSURLRequest requestWithURL:targetURL];
+                [_webView loadRequest:request];
+            }
 
-            [_viewController.view addSubview:_webView]; }
+
+            [_viewController.view addSubview:_webView];
+        }
         
     } else if ([@"resize" isEqualToString:call.method]) {
         if (_webView != nil) {
